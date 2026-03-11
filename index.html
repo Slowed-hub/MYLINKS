@@ -7,7 +7,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mes Liens</title>
+  <title>My Links</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080c12'/><circle cx='16' cy='16' r='10' fill='none' stroke='%2300c8ff' stroke-width='2'/><line x1='6' y1='16' x2='26' y2='16' stroke='%2300c8ff' stroke-width='1.5'/><line x1='16' y1='6' x2='16' y2='26' stroke='%2300c8ff' stroke-width='1.5'/></svg>" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,9 +24,7 @@
       --muted: #4a7a9b;
     }
 
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; }
 
     body {
       background-color: var(--bg);
@@ -37,26 +36,18 @@
       justify-content: flex-start;
       min-height: 100vh;
       overflow-x: hidden;
-      padding: 2.5rem 0;
+      padding: 5rem 0;
     }
 
-    /* Starfield */
+    /* Background image */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.6) 0%, transparent 100%),
-        radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.7) 0%, transparent 100%),
-        radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 85% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
-        radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,0.6) 0%, transparent 100%),
-        radial-gradient(1px 1px at 40% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
-        radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.5) 0%, transparent 100%),
-        radial-gradient(1.5px 1.5px at 25% 40%, rgba(0,200,255,0.4) 0%, transparent 100%),
-        radial-gradient(1.5px 1.5px at 75% 65%, rgba(0,200,255,0.3) 0%, transparent 100%);
+      background-image: url('https://i.ibb.co/tk850gZ/1007114.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.18;
       pointer-events: none;
       z-index: 0;
     }
@@ -79,12 +70,13 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 560px;
+      max-width: 1100px;
       padding: 0 1.5rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1rem;
+      zoom: 1.1;
     }
 
     /* Header */
@@ -120,15 +112,52 @@
       line-height: 1.2;
     }
 
-    h1 span {
-      color: var(--accent);
-    }
+    h1 span { color: var(--accent); }
 
     .header-line {
       width: 60px;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       margin: 1rem auto 0;
+    }
+
+    /* Two-column wrapper */
+    .columns {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 2rem;
+      align-items: center;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Category label */
+    .category {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .category-label {
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .category-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
     /* Links */
@@ -155,40 +184,12 @@
     }
 
     .link-card:nth-child(1)  { animation-delay: 0.10s; }
-    .link-card:nth-child(2)  { animation-delay: 0.18s; }
-    .link-card:nth-child(3)  { animation-delay: 0.26s; }
-    .link-card:nth-child(4)  { animation-delay: 0.34s; }
-    .link-card:nth-child(5)  { animation-delay: 0.42s; }
-    .link-card:nth-child(6)  { animation-delay: 0.50s; }
-    .link-card:nth-child(7)  { animation-delay: 0.58s; }
-    .link-card:nth-child(8)  { animation-delay: 0.66s; }
-    .link-card:nth-child(9)  { animation-delay: 0.74s; }
-    .link-card:nth-child(10) { animation-delay: 0.82s; }
-    .link-card:nth-child(11) { animation-delay: 0.90s; }
-
-    /* Category label */
-    .category {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
-    }
-
-    .category-label {
-      font-size: 0.6rem;
-      font-weight: 500;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .category-line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .link-card:nth-child(2)  { animation-delay: 0.20s; }
+    .link-card:nth-child(3)  { animation-delay: 0.30s; }
+    .link-card:nth-child(4)  { animation-delay: 0.40s; }
+    .link-card:nth-child(5)  { animation-delay: 0.50s; }
+    .link-card:nth-child(6)  { animation-delay: 0.60s; }
+    .link-card:nth-child(7)  { animation-delay: 0.70s; }
 
     /* Scan line effect */
     .link-card::before {
@@ -200,10 +201,7 @@
       background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.06), transparent);
       transition: left 0.5s ease;
     }
-
-    .link-card:hover::before {
-      left: 150%;
-    }
+    .link-card:hover::before { left: 150%; }
 
     /* Left accent bar */
     .link-card::after {
@@ -222,7 +220,6 @@
       transform: translateX(4px);
       box-shadow: 0 0 30px var(--glow), inset 0 0 20px rgba(0, 200, 255, 0.03);
     }
-
     .link-card:hover::after {
       background: var(--accent);
       box-shadow: 0 0 10px var(--accent);
@@ -239,10 +236,7 @@
       transition: border-color 0.3s ease;
       background: rgba(0, 200, 255, 0.04);
     }
-
-    .link-card:hover .link-icon {
-      border-color: var(--accent);
-    }
+    .link-card:hover .link-icon { border-color: var(--accent); }
 
     .link-icon svg {
       width: 20px;
@@ -254,10 +248,7 @@
       stroke-linejoin: round;
     }
 
-    .link-info {
-      flex: 1;
-      min-width: 0;
-    }
+    .link-info { flex: 1; min-width: 0; }
 
     .link-name {
       font-family: 'Orbitron', sans-serif;
@@ -276,6 +267,11 @@
       margin-top: 0.2rem;
       letter-spacing: 0.02em;
       font-weight: 300;
+      transition: color 0.3s ease;
+    }
+
+    .link-card:hover .link-desc {
+      color: var(--accent);
     }
 
     .link-arrow {
@@ -289,7 +285,6 @@
       flex-shrink: 0;
       transition: stroke 0.3s ease, transform 0.3s ease;
     }
-
     .link-card:hover .link-arrow {
       stroke: var(--accent);
       transform: translateX(3px);
@@ -302,199 +297,190 @@
       color: var(--muted);
       text-transform: uppercase;
       animation: fadeUp 0.6s 0.5s ease both;
+      margin-top: 0.5rem;
     }
 
-    /* Animations */
     @keyframes fadeDown {
       from { opacity: 0; transform: translateY(-20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    /* Card cascade entry */
+    @keyframes cardIn {
+      0%   { opacity: 0; transform: translateX(-18px) scaleX(0.96); }
+      60%  { opacity: 1; transform: translateX(3px) scaleX(1.01); }
+      100% { opacity: 1; transform: translateX(0) scaleX(1); }
+    }
+    .link-card { animation: cardIn 0.5s cubic-bezier(.22,.68,0,1.2) both; }
+
+    /* Glitch on h1 */
+    @keyframes glitch1 {
+      0%, 90%, 100% { clip-path: none; transform: none; }
+      92% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
+      94% { clip-path: inset(50% 0 20% 0); transform: translateX(4px); }
+      96% { clip-path: inset(10% 0 80% 0); transform: translateX(-2px); }
+      98% { clip-path: none; transform: translateX(1px); }
+    }
+    @keyframes glitch2 {
+      0%, 90%, 100% { clip-path: none; transform: none; opacity: 0; }
+      92% { clip-path: inset(60% 0 10% 0); transform: translateX(5px); opacity: 0.7; color: #ff003c; }
+      94% { clip-path: inset(30% 0 50% 0); transform: translateX(-5px); opacity: 0.5; color: #00c8ff; }
+      96% { clip-path: inset(80% 0 5% 0); transform: translateX(3px); opacity: 0.6; }
+      98% { opacity: 0; }
+    }
+
+    .glitch-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .glitch-wrap::before,
+    .glitch-wrap::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      font-family: 'Orbitron', sans-serif;
+      font-size: inherit;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      pointer-events: none;
+    }
+    .glitch-wrap::before {
+      animation: glitch1 6s infinite;
+      color: #fff;
+    }
+    .glitch-wrap::after {
+      animation: glitch2 6s infinite;
+      color: var(--accent);
+    }
+
+    /* Canvas stars */
+    #stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 700px) {
+      .columns { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
+  <canvas id="stars"></canvas>
   <div class="container">
 
     <div class="header">
       <div class="header-badge">Navigation Hub</div>
-      <h1>MY <span>LINKS</span></h1>
+      <h1><span class="glitch-wrap" data-text="MY LINKS">MY <span>LINKS</span></span></h1>
       <div class="header-line"></div>
     </div>
 
-    <!-- COMBAT & ÉQUIPEMENT -->
-    <div class="category"><div class="category-line"></div><span class="category-label">Combat &amp; Équipement</span><div class="category-line"></div></div>
-    <div class="links">
+    <div class="columns">
 
-      <a class="link-card" href="https://www.spviewer.eu/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">SP Viewer</div>
-          <div class="link-desc">spviewer.eu · Visualiseur de systèmes</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      <!-- COLONNE GAUCHE -->
+      <div class="col">
 
-      <a class="link-card" href="https://www.erkul.games/live/calculator" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="16" y2="12"/><line x1="8" y1="17" x2="10" y2="17"/><line x1="14" y1="17" x2="16" y2="17"/></svg>
+        <!-- COMBAT & ÉQUIPEMENT -->
+        <div class="category"><div class="category-line"></div><span class="category-label">Combat &amp; Équipement</span><div class="category-line"></div></div>
+        <div class="links">
+          <a class="link-card" href="https://www.spviewer.eu/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div class="link-info"><div class="link-name">SP Viewer</div><div class="link-desc">spviewer.eu · Visualiseur de systèmes</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://www.erkul.games/live/calculator" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="16" y2="12"/><line x1="8" y1="17" x2="10" y2="17"/><line x1="14" y1="17" x2="16" y2="17"/></svg></div>
+            <div class="link-info"><div class="link-name">Erkul DPS Calculator</div><div class="link-desc">erkul.games · Optimisation d'équipement</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
         </div>
-        <div class="link-info">
-          <div class="link-name">Erkul DPS Calculator</div>
-          <div class="link-desc">erkul.games · Optimisation d'équipement</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
 
-    </div>
+        <!-- COMMERCE & TRADING -->
+        <div class="category"><div class="category-line"></div><span class="category-label">Commerce &amp; Trading</span><div class="category-line"></div></div>
+        <div class="links">
+          <a class="link-card" href="https://sc-trade.tools/home" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="link-info"><div class="link-name">SC Trade Tools</div><div class="link-desc">sc-trade.tools · Outils de commerce</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://gallog.co/trading" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+            <div class="link-info"><div class="link-name">Gallog Trading</div><div class="link-desc">gallog.co · Journal de trading</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://uexcorp.space/items" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <div class="link-info"><div class="link-name">UEX Corp Items</div><div class="link-desc">uexcorp.space · Base de données d'items</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
 
-    <!-- COMMERCE & TRADING -->
-    <div class="category"><div class="category-line"></div><span class="category-label">Commerce &amp; Trading</span><div class="category-line"></div></div>
-    <div class="links">
+        <!-- PERSONNAGES -->
+        <div class="category"><div class="category-line"></div><span class="category-label">Personnages</span><div class="category-line"></div></div>
+        <div class="links">
+          <a class="link-card" href="https://www.star-citizen-characters.com/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div class="link-info"><div class="link-name">SC Characters</div><div class="link-desc">star-citizen-characters.com · Personnages</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
 
-      <a class="link-card" href="https://sc-trade.tools/home" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">SC Trade Tools</div>
-          <div class="link-desc">sc-trade.tools · Outils de commerce</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      </div>
 
-      <a class="link-card" href="https://gallog.co/trading" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Gallog Trading</div>
-          <div class="link-desc">gallog.co · Journal de trading</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      <!-- COLONNE DROITE -->
+      <div class="col">
 
-      <a class="link-card" href="https://uexcorp.space/items" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <!-- NAVIGATION & GUIDES -->
+        <div class="category"><div class="category-line"></div><span class="category-label">Navigation &amp; Guides</span><div class="category-line"></div></div>
+        <div class="links">
+          <a class="link-card" href="https://verseguide.com/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>
+            <div class="link-info"><div class="link-name">Verse Guide</div><div class="link-desc">verseguide.com · Guide &amp; ressources</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://regolith.rocks/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4-4-4 4-4z"/></svg></div>
+            <div class="link-info"><div class="link-name">Regolith Rocks</div><div class="link-desc">regolith.rocks · Minage &amp; ressources</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://finder.cstone.space/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div class="link-info"><div class="link-name">Cornerstone Finder</div><div class="link-desc">finder.cstone.space · Localisation</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://starcitizen.tools/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+            <div class="link-info"><div class="link-name">Star Citizen Tools</div><div class="link-desc">starcitizen.tools · Wiki &amp; référence</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
         </div>
-        <div class="link-info">
-          <div class="link-name">UEX Corp Items</div>
-          <div class="link-desc">uexcorp.space · Base de données d'items</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
 
-    </div>
+        <!-- FLOTTES & VAISSEAUX -->
+        <div class="category"><div class="category-line"></div><span class="category-label">Flottes &amp; Vaisseaux</span><div class="category-line"></div></div>
+        <div class="links">
+          <a class="link-card" href="https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+            <div class="link-info"><div class="link-name">Loaner Ship Matrix</div><div class="link-desc">robertsspaceindustries.com · Vaisseaux prêtés</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://hangar.link/" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <div class="link-info"><div class="link-name">Hangar Link</div><div class="link-desc">hangar.link · Partage de hangar</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a class="link-card" href="https://ccugame.app/sign-in?redirectURL=%2Fyour-items%2Ffleet" target="_blank" rel="noopener">
+            <div class="link-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="link-info"><div class="link-name">CCU Game — Fleet</div><div class="link-desc">ccugame.app · Gestion de flotte</div></div>
+            <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
 
-    <!-- NAVIGATION & GUIDES -->
-    <div class="category"><div class="category-line"></div><span class="category-label">Navigation &amp; Guides</span><div class="category-line"></div></div>
-    <div class="links">
-
-      <a class="link-card" href="https://verseguide.com/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Verse Guide</div>
-          <div class="link-desc">verseguide.com · Guide &amp; ressources</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-      <a class="link-card" href="https://regolith.rocks/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4-4-4 4-4z"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Regolith Rocks</div>
-          <div class="link-desc">regolith.rocks · Minage &amp; ressources</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-      <a class="link-card" href="https://finder.cstone.space/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Cornerstone Finder</div>
-          <div class="link-desc">finder.cstone.space · Localisation</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-      <a class="link-card" href="https://starcitizen.tools/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Star Citizen Tools</div>
-          <div class="link-desc">starcitizen.tools · Wiki &amp; référence</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-    </div>
-
-    <!-- FLOTTES & VAISSEAUX -->
-    <div class="category"><div class="category-line"></div><span class="category-label">Flottes &amp; Vaisseaux</span><div class="category-line"></div></div>
-    <div class="links">
-
-      <a class="link-card" href="https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Loaner Ship Matrix</div>
-          <div class="link-desc">robertsspaceindustries.com · Vaisseaux prêtés</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-      <a class="link-card" href="https://hangar.link/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">Hangar Link</div>
-          <div class="link-desc">hangar.link · Partage de hangar</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-      <a class="link-card" href="https://ccugame.app/sign-in?redirectURL=%2Fyour-items%2Ffleet" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">CCU Game — Fleet</div>
-          <div class="link-desc">ccugame.app · Gestion de flotte</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-
-    </div>
-
-    <!-- PERSONNAGES -->
-    <div class="category"><div class="category-line"></div><span class="category-label">Personnages</span><div class="category-line"></div></div>
-    <div class="links">
-
-      <a class="link-card" href="https://www.star-citizen-characters.com/" target="_blank" rel="noopener">
-        <div class="link-icon">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <div class="link-info">
-          <div class="link-name">SC Characters</div>
-          <div class="link-desc">star-citizen-characters.com · Personnages</div>
-        </div>
-        <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      </div>
 
     </div>
 
@@ -503,58 +489,88 @@
   </div>
 
   <script>
+    /* ── Dynamic starfield ── */
+    const canvas = document.getElementById('stars');
+    const c = canvas.getContext('2d');
+    let W, H, stars = [];
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function initStars(n = 200) {
+      stars = Array.from({ length: n }, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.4 + 0.2,
+        alpha: Math.random() * 0.8 + 0.1,
+        da: (Math.random() * 0.006 + 0.002) * (Math.random() < 0.5 ? 1 : -1),
+        blue: Math.random() < 0.12
+      }));
+    }
+
+    function drawStars() {
+      c.clearRect(0, 0, W, H);
+      stars.forEach(s => {
+        s.alpha += s.da;
+        if (s.alpha <= 0.05 || s.alpha >= 0.95) s.da *= -1;
+        c.beginPath();
+        c.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        c.fillStyle = s.blue
+          ? `rgba(0,200,255,${s.alpha * 0.55})`
+          : `rgba(255,255,255,${s.alpha * 0.65})`;
+        c.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+
+    window.addEventListener('resize', () => { resize(); initStars(); });
+    resize(); initStars(); drawStars();
+  </script>
+
+  <script>
+    /* ── Audio ── */
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playHover() {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+      osc.connect(gain); gain.connect(ctx.destination);
       osc.type = 'sine';
       osc.frequency.setValueAtTime(880, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(1100, ctx.currentTime + 0.08);
       gain.gain.setValueAtTime(0, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.12);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.12);
     }
 
     function playClick() {
       const osc1 = ctx.createOscillator();
       const gain1 = ctx.createGain();
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
+      osc1.connect(gain1); gain1.connect(ctx.destination);
       osc1.type = 'sine';
       osc1.frequency.setValueAtTime(600, ctx.currentTime);
       osc1.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.06);
       gain1.gain.setValueAtTime(0.06, ctx.currentTime);
       gain1.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
-      osc1.start(ctx.currentTime);
-      osc1.stop(ctx.currentTime + 0.12);
+      osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 0.12);
 
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
+      osc2.connect(gain2); gain2.connect(ctx.destination);
       osc2.type = 'sine';
       osc2.frequency.setValueAtTime(1200, ctx.currentTime + 0.08);
       gain2.gain.setValueAtTime(0, ctx.currentTime + 0.08);
       gain2.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.1);
       gain2.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
-      osc2.start(ctx.currentTime + 0.08);
-      osc2.stop(ctx.currentTime + 0.22);
+      osc2.start(ctx.currentTime + 0.08); osc2.stop(ctx.currentTime + 0.22);
     }
 
     document.querySelectorAll('.link-card').forEach(card => {
-      card.addEventListener('mouseenter', () => {
-        if (ctx.state === 'suspended') ctx.resume();
-        playHover();
-      });
-      card.addEventListener('click', () => {
-        if (ctx.state === 'suspended') ctx.resume();
-        playClick();
-      });
+      card.addEventListener('mouseenter', () => { if (ctx.state === 'suspended') ctx.resume(); playHover(); });
+      card.addEventListener('click', () => { if (ctx.state === 'suspended') ctx.resume(); playClick(); });
     });
   </script>
 </body>
