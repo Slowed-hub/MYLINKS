@@ -1,0 +1,1667 @@
+<!--
+  MIT License
+  Copyright (c) 2026 Slowed-hub
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Links — Terminal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ══ STYLES TERMINAL ══ -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      font-family: "Rajdhani", sans-serif;
+    }
+
+    .scene-bg { position: fixed; inset: 0; background: #000; z-index: 0; }
+
+    .terminal-wrap {
+      position: relative; z-index: 1;
+      width: 100vw; height: 100vh;
+    }
+
+    :root { --sx: 0px; --sy: 0px; --sw: 0px; --sh: 0px; }
+
+    .screen-black, .screen, .screen-fx {
+      position: absolute;
+      left: var(--sx); top: var(--sy);
+      width: var(--sw); height: var(--sh);
+    }
+
+    .screen-black {
+      background: #07111f;
+      border-radius: 5px;
+      z-index: 1; overflow: hidden;
+    }
+    .screen-black::after {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: url("https://i.ibb.co/tk850gZ/1007114.jpg");
+      background-size: cover; background-position: center center;
+      opacity: 0.13; pointer-events: none; z-index: 0;
+    }
+
+    .screen { overflow: hidden; border-radius: 5px; background: transparent; z-index: 2; }
+
+    .terminal-bg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none; z-index: 4;
+      mix-blend-mode: lighten;
+    }
+
+    .screen-fx {
+      border-radius: 5px; pointer-events: none; z-index: 5;
+      background:
+        repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px),
+        radial-gradient(ellipse at 68% 18%, rgba(180,220,255,0.03) 0%, transparent 55%);
+    }
+
+    /* ══ SITE INNER ══ */
+    .site-inner {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      bottom: 28px; /* espace footer */
+      overflow-x: hidden;
+      overflow-y: auto;
+      transform-origin: top left;
+      opacity: 0;
+      animation: siteReveal 0.6s 3.0s ease forwards;
+    }
+    .site-inner::-webkit-scrollbar { width: 4px; }
+    .site-inner::-webkit-scrollbar-track { background: rgba(7,17,31,0.8); }
+    .site-inner::-webkit-scrollbar-thumb { background: #4a8ab0; border-radius: 2px; }
+    .site-inner::-webkit-scrollbar-thumb:hover { background: #7eb8d4; }
+
+    /* Boot overlay */
+    .boot-overlay {
+      position: absolute; inset: 0;
+      background: #020b17; z-index: 3;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 7px;
+      animation: bootFade 0.5s 2.8s ease forwards;
+    }
+    @keyframes bootFade { to { opacity:0; pointer-events:none; visibility:hidden; } }
+
+    /* Splash */
+    #splash {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #020b17;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      cursor: pointer; transition: opacity 0.6s ease;
+      overflow: hidden;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+
+    /* Canvas étoiles plein écran */
+    #splash-stars { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+    #splash-pulse { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
+
+    /* Vignette */
+    #splash-vignette {
+      position: absolute; inset: 0; pointer-events: none; z-index: 1;
+      background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.75) 100%);
+    }
+
+    /* Scanlines */
+    #splash-scan {
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);
+    }
+
+    /* Coins HUD */
+    .sp-hud-corner {
+      position: absolute; width: 22px; height: 22px; z-index: 3;
+      opacity: 0; animation: hudIn 0.4s ease forwards;
+    }
+    .sp-hud-corner.tl { top: 16px; left: 16px; border-top: 1.5px solid rgba(126,184,212,0.6); border-left: 1.5px solid rgba(126,184,212,0.6); animation-delay: .2s; }
+    .sp-hud-corner.tr { top: 16px; right: 16px; border-top: 1.5px solid rgba(126,184,212,0.6); border-right: 1.5px solid rgba(126,184,212,0.6); animation-delay: .3s; }
+    .sp-hud-corner.bl { bottom: 16px; left: 16px; border-bottom: 1.5px solid rgba(126,184,212,0.6); border-left: 1.5px solid rgba(126,184,212,0.6); animation-delay: .4s; }
+    .sp-hud-corner.br { bottom: 16px; right: 16px; border-bottom: 1.5px solid rgba(126,184,212,0.6); border-right: 1.5px solid rgba(126,184,212,0.6); animation-delay: .5s; }
+
+    /* Barre signal bas */
+    #splash-signal {
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 8px; z-index: 4;
+      opacity: 0; animation: spFadeIn 0.5s 2.6s ease forwards;
+      white-space: nowrap;
+    }
+    #splash-signal .sig-line { width: 40px; height: 1px; }
+    #splash-signal .sig-line.l { background: linear-gradient(90deg, transparent, rgba(126,184,212,0.3)); }
+    #splash-signal .sig-line.r { background: linear-gradient(90deg, rgba(126,184,212,0.3), transparent); }
+    #splash-signal .sig-dot { width: 3px; height: 3px; background: rgba(126,184,212,0.5); transform: rotate(45deg); animation: spPulse 1.5s infinite; }
+    #splash-signal .sig-txt { font-size: 10px; letter-spacing: .28em; color: rgba(126,184,212,0.35); text-transform: uppercase; }
+
+    /* Contenu central */
+    #splash-content { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: -60px; }
+    #splash-logo { margin-bottom: 18px; }
+
+    /* Logo cercle */
+    #splash-logo {
+      width: 130px; height: 130px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; animation: spLogoIn 0.6s 0.1s ease forwards;
+    }
+    #splash-logo .sp-ring {
+      position: absolute; inset: -6px; border-radius: 50%;
+      border: 1px solid rgba(126,184,212,0.12);
+      border-top-color: rgba(126,184,212,0.55);
+      animation: spSpin 7s linear infinite;
+    }
+    #splash-logo .sp-ring2 {
+      position: absolute; inset: -14px; border-radius: 50%;
+      border: 1px solid rgba(126,184,212,0.06);
+      border-bottom-color: rgba(126,184,212,0.25);
+      animation: spSpin 12s linear infinite reverse;
+    }
+    #splash-logo .sp-circle {
+      width: 130px; height: 130px; border-radius: 50%;
+      border: 1px solid rgba(126,184,212,0.45);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(126,184,212,0.03);
+    }
+    #splash-logo svg { width: 58px; height: 58px; stroke: #7eb8d4; fill: none; stroke-width: 1.5; }
+
+    .sp-welcome {
+      font-size: 13px; letter-spacing: .35em; color: rgba(126,184,212,0.45);
+      text-transform: uppercase;
+      opacity: 0; animation: spFadeIn 0.5s 0.7s ease forwards;
+    }
+
+    /* Séparateur */
+    #splash-sep {
+      display: flex; align-items: center; gap: 8px;
+      opacity: 0; animation: spFadeIn 0.5s 0.9s ease forwards;
+    }
+    #splash-sep .sep-line {
+      height: 1px; background: rgba(126,184,212,0.3);
+      width: 0; animation: spLineGrow 0.6s 1s ease forwards;
+    }
+    #splash-sep .sep-dot { width: 3px; height: 3px; background: rgba(126,184,212,0.5); transform: rotate(45deg); }
+
+    .sp-title {
+      font-size: 42px; letter-spacing: .42em; color: #e8f0f8;
+      text-transform: uppercase; font-weight: 700;
+      text-shadow: 0 0 30px rgba(126,184,212,0.25);
+      opacity: 0; animation: spFadeIn 0.5s 1s ease forwards;
+    }
+
+    /* Typewriter */
+    #splash-tw {
+      font-size: 11px; letter-spacing: .22em; color: rgba(126,184,212,0.5);
+      text-transform: uppercase; min-height: 13px;
+      opacity: 0; animation: spFadeIn 0s 1.4s ease forwards;
+    }
+
+    .sp-hint {
+      font-size: 13px; letter-spacing: .28em; color: rgba(126,184,212,0.35);
+      text-transform: uppercase;
+      opacity: 0; animation: spBlink 1.4s 2.8s ease-in-out infinite;
+    }
+
+    @keyframes blink      { 0%,100%{opacity:.4} 50%{opacity:1} }
+    @keyframes hudIn      { from{opacity:0;transform:scale(.5)} to{opacity:1;transform:scale(1)} }
+    @keyframes spLogoIn   { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+    @keyframes spFadeIn   { from{opacity:0} to{opacity:1} }
+    @keyframes spSpin     { to{transform:rotate(360deg)} }
+    @keyframes spPulse    { 0%,100%{opacity:.4} 50%{opacity:1} }
+    @keyframes spBlink    { 0%,100%{opacity:.3} 50%{opacity:.8} }
+    @keyframes spLineGrow { to{width:55px} }
+    @keyframes spScanMove { from{top:-8%} to{top:108%} }
+    @keyframes spFlash    { 0%{opacity:0} 20%{opacity:1} 100%{opacity:0} }
+
+    /* ── Scan vertical ── */
+    #splash-scanline {
+      position: absolute; left: 0; right: 0; height: 8%; pointer-events: none; z-index: 6;
+      background: linear-gradient(to bottom, transparent 0%, rgba(100,180,255,0.04) 40%, rgba(100,180,255,0.08) 50%, rgba(100,180,255,0.04) 60%, transparent 100%);
+      animation: spScanMove 5s linear infinite;
+      top: -8%;
+    }
+
+    /* ── CRT distorsion ── */
+    #splash-crt {
+      position: absolute; inset: 0; pointer-events: none; z-index: 7;
+      border-radius: 50% / 8%;
+      box-shadow:
+        inset 0 0 80px rgba(0,0,0,0.5),
+        inset 60px 0 120px rgba(0,0,0,0.3),
+        inset -60px 0 120px rgba(0,0,0,0.3),
+        inset 0 40px 80px rgba(0,0,0,0.35),
+        inset 0 -40px 80px rgba(0,0,0,0.35);
+    }
+
+    /* ── Flash blanc au clic ── */
+    #splash-flash {
+      position: absolute; inset: 0; z-index: 9999;
+      background: white; pointer-events: none;
+      opacity: 0;
+    }
+    #splash-flash.go { animation: spFlash 0.5s ease forwards; }
+
+    /* ── Chromatic aberration supprimée ── */
+
+    /* ══ FOOTER FIXE ══ */
+    #footer-bar {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 28px;
+      z-index: 9998;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      background: linear-gradient(to top, rgba(2,11,23,0.97) 60%, transparent 100%);
+      pointer-events: none;
+      opacity: 0;
+      animation: siteReveal 0.6s 3.3s ease forwards;
+    }
+    #footer-bar .fb-line {
+      flex: 1; max-width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(126,184,212,0.2));
+    }
+    #footer-bar .fb-line.right { background: linear-gradient(90deg, rgba(126,184,212,0.2), transparent); }
+    #footer-bar .fb-dot { width: 3px; height: 3px; background: rgba(126,184,212,0.4); transform: rotate(45deg); }
+    #footer-bar .fb-text {
+      font-family: "Rajdhani", sans-serif; font-size: 9px;
+      letter-spacing: 0.28em; color: rgba(126,184,212,0.45); text-transform: uppercase;
+    }
+
+    /* ══ SWITCHES ══ */
+    #mute-btn, #fx-btn {
+      position: absolute; z-index: 9999;
+      background: none; border: none; padding: 0; cursor: pointer;
+      opacity: 0; animation: siteReveal 0.6s 3.3s ease forwards;
+      display: flex; align-items: center; gap: 7px;
+    }
+    #mute-btn .mute-label, #fx-btn .fx-label {
+      font-family: "Rajdhani", sans-serif; font-size: 9px; letter-spacing: .2em;
+      text-transform: uppercase; color: rgba(126,184,212,0.7); transition: color 0.3s;
+    }
+    #mute-btn.muted .mute-label, #fx-btn.muted .fx-label { color: rgba(126,184,212,0.25); }
+    .slider-track {
+      width: 38px; height: 20px;
+      background: rgba(126,184,212,0.15); border: 1px solid rgba(126,184,212,0.35);
+      border-radius: 20px; position: relative; transition: background 0.3s, border-color 0.3s;
+    }
+    #mute-btn:not(.muted) .slider-track,
+    #fx-btn:not(.muted) .slider-track {
+      background: rgba(126,184,212,0.25); border-color: rgba(126,184,212,0.7);
+    }
+    .slider-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: rgba(126,184,212,0.4);
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1), background 0.3s;
+    }
+    #mute-btn:not(.muted) .slider-knob,
+    #fx-btn:not(.muted) .slider-knob {
+      transform: translateX(18px); background: #7eb8d4;
+      box-shadow: 0 0 8px rgba(126,184,212,0.6);
+    }
+
+    @keyframes siteReveal { from { opacity:0; } to { opacity:1; } }
+
+    .boot-logo {
+      width:28px; height:28px; border:1px solid rgba(126,184,212,0.55); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .boot-logo svg { width:14px; height:14px; stroke:#7eb8d4; fill:none; stroke-width:1.5; }
+    .boot-text  { font-size:clamp(6px,.9vw,10px); letter-spacing:.22em; color:#7eb8d4; text-transform:uppercase; }
+    .boot-bar-wrap { width:55%; height:2px; background:rgba(126,184,212,0.1); border-radius:1px; overflow:hidden; }
+    .boot-bar   { height:100%; background:#7eb8d4; animation:barFill 2.4s ease forwards; }
+    @keyframes barFill { from{width:0} to{width:100%} }
+    .boot-sub   { font-size:clamp(4px,.5vw,7px); letter-spacing:.18em; color:rgba(126,184,212,.3); text-transform:uppercase; }
+
+    /* ══ LOGO TB — sur le bezel, hors écran ══ */
+    #tb-logo {
+      position: absolute;
+      z-index: 200;
+      display: flex; flex-direction: column; align-items: center;
+      width: auto; /* géré exclusivement par JS */
+      pointer-events: auto;
+      cursor: pointer;
+      transition: opacity 0.8s ease;
+      perspective: 600px;
+    }
+    #tb-logo .logo-wrap {
+      position: relative; width: 100%;
+      transform-style: preserve-3d;
+      animation: rotate3d 6s ease-in-out infinite, flicker3d 5s infinite;
+    }
+    #tb-logo .logo-base { width: 100%; display: block; animation: glowPulse 3s ease-in-out infinite; }
+    #tb-logo .logo-holo {
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 0%, rgba(0,255,180,0.0) 30%, rgba(60,140,255,0.22) 45%, rgba(180,0,255,0.15) 55%, rgba(255,200,0,0.10) 65%, transparent 80%);
+      background-size: 300% 100%;
+      animation: holoShimmer 3s ease-in-out infinite;
+      mix-blend-mode: screen; pointer-events: none;
+    }
+    #tb-logo .logo-scan {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    #tb-logo .logo-scan::after {
+      content: ""; position: absolute; left: 0; right: 0; top: 0; height: 35%;
+      background: linear-gradient(to bottom, transparent, rgba(100,180,255,0.07) 45%, rgba(100,180,255,0.12) 50%, rgba(100,180,255,0.07) 55%, transparent);
+      animation: scanLine 2s linear infinite;
+    }
+    #tb-logo::after {
+      content: ""; position: absolute; inset: -6px;
+      background: radial-gradient(ellipse, rgba(100,180,255,0.2) 0%, transparent 70%);
+      animation: srcPulse 2s ease-in-out infinite .5s;
+      pointer-events: none; z-index: 0; filter: blur(3px);
+    }
+
+    @keyframes rotate3d {
+      0%   { transform: rotateY(0deg) rotateX(4deg); }
+      25%  { transform: rotateY(20deg) rotateX(6deg); }
+      50%  { transform: rotateY(0deg) rotateX(2deg); }
+      75%  { transform: rotateY(-20deg) rotateX(6deg); }
+      100% { transform: rotateY(0deg) rotateX(4deg); }
+    }
+    @keyframes holoShimmer {
+      0%,100% { background-position: 100% 0; opacity: 0.4; }
+      50%      { background-position:   0% 0; opacity: 0.9; }
+    }
+    @keyframes glowPulse {
+      0%,100% { filter: drop-shadow(0 0 6px rgba(100,180,255,0.5)); }
+      50%     { filter: drop-shadow(0 0 18px rgba(100,180,255,0.9)) drop-shadow(0 0 40px rgba(60,140,255,0.4)); }
+    }
+    @keyframes flicker3d {
+      0%,97%,100% { opacity: 1; }
+      98% { opacity: 0.6; }
+      99% { opacity: 0.9; }
+    }
+    @keyframes scanLine {
+      0%   { transform: translateY(-100%); }
+      100% { transform: translateY(400%); }
+    }
+    @keyframes srcPulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+
+    /* ══ CANVAS PROJECTION ══ */
+    #holo-canvas {
+      position: absolute; top: 0; left: 0;
+      pointer-events: none; z-index: 150;
+      display: none;
+    }
+  </style>
+
+  <!-- ══ STYLES DU SITE ══ -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #07111f; --bg2: #0c1c2e;
+      --surface: rgba(10,22,40,0.92);
+      --border: rgba(120,160,200,0.18); --border2: rgba(120,160,200,0.08);
+      --accent: #7eb8d4; --accent2: #4a8ab0;
+      --white: #e8f0f8; --muted: #5a7a9a; --sep: rgba(120,160,200,0.25);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(7,17,31,0.8); }
+    ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    .site-inner { background-color: transparent; color: var(--white); font-family: 'Rajdhani', sans-serif; }
+
+    .site-inner::after {
+      content: ''; position: fixed; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(7,17,31,0.75) 0%, transparent 25%, transparent 75%, rgba(7,17,31,0.85) 100%),
+        linear-gradient(to right, rgba(7,17,31,0.5) 0%, transparent 15%, transparent 85%, rgba(7,17,31,0.5) 100%);
+      pointer-events: none; z-index: 0;
+    }
+
+    canvas#stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ══ HEADER STICKY ══ */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      text-align: center;
+      padding: 0.8em 1.5em 0.5em;
+      background: linear-gradient(to bottom, rgba(7,17,31,0.98) 70%, transparent 100%);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeDown 0.7s 3.1s ease forwards;
+    }
+
+    .header-top-bar {
+      display: flex; align-items: center; justify-content: center;
+      gap: 1em; margin-bottom: 0.7em;
+    }
+    .header-top-bar .bar {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--sep));
+    }
+    .header-top-bar .bar.right { background: linear-gradient(90deg, var(--sep), transparent); }
+
+    .header-emblem {
+      position: relative;
+      width: 30px; height: 30px;
+      border: 1px solid var(--sep); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(126,184,212,0.05);
+      overflow: visible !important; z-index: 10;
+    }
+    .header-emblem svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 1.5; }
+    .header-emblem::after {
+      content: ""; position: absolute; inset: -8px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(100,180,255,0.45) 0%, transparent 65%);
+      animation: srcPulse 2s ease-in-out infinite; z-index: -1; filter: blur(4px);
+    }
+
+    h1 {
+      font-family: 'Rajdhani', sans-serif; font-size: clamp(1.1em, 2.5em, 2.2em);
+      font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase;
+      color: var(--white); text-shadow: 0 0 40px rgba(126,184,212,0.3); line-height: 1;
+    }
+    .header-sub { font-size: 0.65em; letter-spacing: 0.3em; text-transform: uppercase; color: var(--muted); margin-top: 0.3em; }
+    .header-bottom-bar { display: flex; align-items: center; justify-content: center; gap: 0.5em; margin-top: 0.6em; }
+    .hb-line { flex: 1; max-width: 80px; height: 1px; background: var(--sep); }
+    .hb-dot  { width: 4px; height: 4px; background: var(--accent2); transform: rotate(45deg); }
+
+    /* ══ CONTENU ══ */
+    .content-area { position: relative; z-index: 1; width: 100%; padding: 0.6em 1em 2.5em; flex: 1; }
+    .wrapper {
+      width: 100%; max-width: 1080px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5em; align-items: start;
+    }
+    .col { display: flex; flex-direction: column; gap: 0; }
+
+    .category {
+      display: flex; align-items: center;
+      padding: 0.3em 0 0.28em;
+      border-bottom: 1px solid var(--sep);
+      margin-bottom: 0.05em; margin-top: 0.7em;
+    }
+    .category:first-child { margin-top: 0; }
+    .category-label {
+      font-size: 0.65em; font-weight: 600; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--accent);
+      padding-bottom: 2px; border-bottom: 2px solid var(--accent); margin-bottom: -1px;
+    }
+
+    .link-card {
+      position: relative; display: flex; align-items: center; gap: 0.6em;
+      padding: 0.42em 0.7em; text-decoration: none; color: var(--white);
+      border-bottom: 1px solid var(--border2);
+      transition: all 0.2s ease; overflow: hidden;
+      animation: cardIn 0.45s cubic-bezier(.22,.68,0,1.15) both; background: transparent;
+    }
+    .link-card:nth-child(1){animation-delay:.08s} .link-card:nth-child(2){animation-delay:.16s}
+    .link-card:nth-child(3){animation-delay:.24s} .link-card:nth-child(4){animation-delay:.32s}
+    .link-card:nth-child(5){animation-delay:.40s} .link-card:nth-child(6){animation-delay:.48s}
+    .link-card:nth-child(7){animation-delay:.56s}
+
+    .link-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(126,184,212,0.07) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .link-card:hover::before { opacity: 1; }
+    .link-card::after {
+      content: ''; position: absolute; left: 0; top: 15%; bottom: 15%;
+      width: 2px; background: var(--accent); opacity: 0; transition: opacity 0.2s ease;
+    }
+    .link-card:hover::after { opacity: 1; }
+    .link-card:hover { color: #fff; padding-left: 1.1em; }
+
+    .link-icon {
+      width: 28px; height: 28px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      background: rgba(126,184,212,0.04); transition: border-color 0.2s, background 0.2s;
+    }
+    .link-card:hover .link-icon { border-color: var(--accent2); background: rgba(126,184,212,0.1); }
+    .link-icon svg {
+      width: 13px; height: 13px; stroke: var(--accent); fill: none;
+      stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s;
+    }
+    .link-card:hover .link-icon svg { stroke: #fff; }
+    .link-info { flex: 1; min-width: 0; }
+    .link-name {
+      font-family: 'Rajdhani', sans-serif; font-size: 0.8em; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--white);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s;
+    }
+    .link-card:hover .link-name { color: #fff; }
+    .link-desc {
+      font-size: 0.64em; color: var(--muted); margin-top: 0.05em;
+      font-weight: 400; letter-spacing: 0.03em;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s;
+    }
+    .link-card:hover .link-desc { color: var(--accent); }
+    .link-arrow {
+      width: 12px; height: 12px; stroke: var(--muted); fill: none;
+      stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0; opacity: 0; transform: translateX(-4px); transition: all 0.2s ease;
+    }
+    .link-card:hover .link-arrow { stroke: var(--accent); opacity: 1; transform: translateX(0); }
+
+    @keyframes fadeDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes cardIn  { 0%{opacity:0;transform:translateX(-10px)} 100%{opacity:1;transform:translateX(0)} }
+
+    @keyframes glitch1 {
+      0%,90%,100%{clip-path:none;transform:none}
+      92%{clip-path:inset(20% 0 60% 0);transform:translateX(-3px)}
+      94%{clip-path:inset(50% 0 20% 0);transform:translateX(3px)}
+      96%{clip-path:none;transform:translateX(1px)}
+    }
+    @keyframes glitch2 {
+      0%,90%,100%{clip-path:none;transform:none;opacity:0}
+      92%{clip-path:inset(60% 0 10% 0);transform:translateX(4px);opacity:0.5;color:#7eb8d4}
+      94%{clip-path:inset(30% 0 50% 0);transform:translateX(-4px);opacity:0.4}
+      96%{opacity:0}
+    }
+    .glitch-wrap{position:relative;display:inline-block}
+    .glitch-wrap::before,.glitch-wrap::after{content:attr(data-text);position:absolute;inset:0;font-family:'Rajdhani',sans-serif;font-size:inherit;font-weight:700;letter-spacing:0.35em;text-transform:uppercase;pointer-events:none}
+    .glitch-wrap::before{animation:glitch1 7s infinite;color:var(--white)}
+    .glitch-wrap::after{animation:glitch2 7s infinite;color:var(--white)}
+
+    .scanlines {
+      position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);
+      animation: scanMove 8s linear infinite;
+    }
+    @keyframes scanMove { from{background-position:0 0} to{background-position:0 40px} }
+
+    .link-card .hud-corner { position:absolute;width:7px;height:7px;pointer-events:none;opacity:0.4;transition:opacity 0.2s ease; }
+    .link-card:hover .hud-corner{opacity:1}
+    .hud-corner.tl{top:3px;left:3px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)}
+    .hud-corner.tr{top:3px;right:3px;border-top:1px solid var(--accent);border-right:1px solid var(--accent)}
+    .hud-corner.bl{bottom:3px;left:3px;border-bottom:1px solid var(--accent);border-left:1px solid var(--accent)}
+    .hud-corner.br{bottom:3px;right:3px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent)}
+
+    .site-inner { container-type: inline-size; container-name: screen; }
+
+    @container screen (max-width: 700px) {
+      .wrapper{grid-template-columns:1fr;gap:0}
+      .header h1{font-size:clamp(12px,4cqi,22px)}
+      .header-sub{font-size:clamp(7px,2cqi,11px)}
+      .link-card{padding:6px 10px;gap:8px}
+      .link-card .desc{font-size:clamp(7px,1.8cqi,10px)}
+      .category-title{font-size:clamp(7px,2cqi,10px)}
+    }
+    @container screen (max-width: 450px) {
+      .wrapper{grid-template-columns:1fr}
+      .link-card{padding:4px 8px}
+      .hud-corner{display:none}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash -->
+  <div id="splash">
+    <canvas id="splash-stars"></canvas>
+    <div id="splash-vignette"></div>
+    <div id="splash-scan"></div>
+    <canvas id="splash-pulse"></canvas>
+    <div id="splash-flash"></div>
+    <div id="splash-scanline"></div>
+    <div id="splash-crt"></div>
+    <!-- Coins HUD -->
+    <div class="sp-hud-corner tl"></div>
+    <div class="sp-hud-corner tr"></div>
+    <div class="sp-hud-corner bl"></div>
+    <div class="sp-hud-corner br"></div>
+    <!-- Barre signal bas -->
+    <div id="splash-signal">
+      <div class="sig-line l"></div>
+      <div class="sig-dot"></div>
+      <span class="sig-txt">ASOP Terminal v4.2 · Signal nominal</span>
+      <div class="sig-dot"></div>
+      <div class="sig-line r"></div>
+    </div>
+    <!-- Contenu central -->
+    <div id="splash-content">
+      <div id="splash-logo">
+        <div class="sp-ring2"></div>
+        <div class="sp-ring"></div>
+        <div class="sp-circle">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+        </div>
+      </div>
+      <div class="sp-welcome">Welcome to the ASOP</div>
+      <div id="splash-sep">
+        <div class="sep-line"></div>
+        <div class="sep-dot"></div>
+        <div class="sep-line"></div>
+      </div>
+      <div class="sp-title" id="splash-title" data-text="My Links">My <span style="color:#7eb8d4;text-shadow:0 0 20px rgba(126,184,212,0.6)">Links</span></div>
+      <div id="splash-tw"></div>
+      <div class="sp-hint">— Cliquer pour entrer —</div>
+    </div>
+    <script>
+      // Étoiles plein écran
+      const splashC = document.getElementById('splash-stars');
+      const splashCtx = splashC.getContext('2d');
+      const pulseC = document.getElementById('splash-pulse');
+      const pulseCtx = pulseC.getContext('2d');
+      function splashResize() {
+        splashC.width = pulseC.width = window.innerWidth;
+        splashC.height = pulseC.height = window.innerHeight;
+      }
+      splashResize();
+      window.addEventListener('resize', splashResize);
+
+      // Hover intensity
+      let splashHover = 0;
+      const splashEl2 = document.getElementById('splash');
+      if (splashEl2) {
+        splashEl2.addEventListener('mouseenter', () => splashHover = 1);
+        splashEl2.addEventListener('mouseleave', () => splashHover = 0);
+      }
+      const splashStars = Array.from({length: 220}, () => ({
+        x: Math.random() * splashC.width, y: Math.random() * splashC.height,
+        r: Math.random() * 1.2 + 0.1,
+        a: Math.random() * 0.7 + 0.1,
+        da: (Math.random() * 0.004 + 0.001) * (Math.random() < 0.5 ? 1 : -1),
+        blue: Math.random() < 0.1
+      }));
+
+      // Lasers — rayons qui partent du logo vers les bords
+      const LASER_COUNT = 12;
+      const splashLasers = Array.from({length: LASER_COUNT}, (_, i) => ({
+        angle: (i / LASER_COUNT) * Math.PI * 2 + Math.random() * 0.3,
+        speed: 0.003 + Math.random() * 0.004,
+        len: 0,         // longueur courante (croît depuis 0)
+        maxLen: 0,      // recalculé à chaque frame depuis le centre
+        alpha: 0.4 + Math.random() * 0.4,
+        width: 0.5 + Math.random() * 1.2,
+        pulse: Math.random() * Math.PI * 2,  // phase scintillement
+        active: false,
+        delay: i * 180 + Math.random() * 400, // décalage d'apparition
+        born: Date.now()
+      }));
+
+      let splashPhase = 0;
+
+      function drawSplashStars() {
+        if (!document.getElementById('splash')) return;
+        splashCtx.clearRect(0, 0, splashC.width, splashC.height);
+        splashPhase += 0.018;
+
+        // Centre du logo — position réelle dans le DOM
+        const logoEl = document.getElementById('splash-logo');
+        const logoRect = logoEl ? logoEl.getBoundingClientRect() : null;
+        const cx = logoRect ? logoRect.left + logoRect.width / 2 : splashC.width / 2;
+        const cy = logoRect ? logoRect.top + logoRect.height / 2 : splashC.height / 2 - 80;
+        const logoR = logoRect ? logoRect.width / 2 : 65;
+
+        // ── Étoiles ──
+        splashStars.forEach(s => {
+          s.a += s.da;
+          if (s.a <= 0.05 || s.a >= 0.85) s.da *= -1;
+          splashCtx.beginPath(); splashCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          splashCtx.fillStyle = s.blue ? `rgba(126,184,212,${s.a*0.5})` : `rgba(220,235,255,${s.a*0.6})`;
+          splashCtx.fill();
+        });
+
+        // ── Lasers ──
+        const now = Date.now();
+        splashLasers.forEach(l => {
+          if (now - l.born < l.delay) return;
+          // Angle qui tourne lentement
+          l.angle += l.speed * (Math.sin(splashPhase * 0.3 + l.pulse) * 0.2 + 0.02);
+          // Longueur max = distance du centre au bord de l'écran dans cette direction
+          const cosA = Math.cos(l.angle), sinA = Math.sin(l.angle);
+          const toBorderX = cosA > 0 ? (splashC.width - cx) / cosA : -cx / cosA;
+          const toBorderY = sinA > 0 ? (splashC.height - cy) / sinA : -cy / sinA;
+          l.maxLen = Math.min(Math.abs(toBorderX), Math.abs(toBorderY)) * (0.7 + 0.3 * Math.random());
+          if (l.len < l.maxLen) l.len = Math.min(l.maxLen, l.len + l.maxLen * 0.02);
+
+          const startX = cx + cosA * logoR;
+          const startY = cy + sinA * logoR;
+          const endX   = cx + cosA * (logoR + l.len);
+          const endY   = cy + sinA * (logoR + l.len);
+
+          const hoverBoost = 1 + splashHover * 0.5;
+          const flicker = (Math.sin(splashPhase * 3.1 + l.pulse) * 0.15 + 0.85) * l.alpha * hoverBoost;
+
+          // Glow large
+          splashCtx.save();
+          splashCtx.filter = 'blur(6px)';
+          const gG = splashCtx.createLinearGradient(startX, startY, endX, endY);
+          gG.addColorStop(0, `rgba(100,180,255,${(flicker * 0.6).toFixed(2)})`);
+          gG.addColorStop(0.5, `rgba(100,180,255,${(flicker * 0.2).toFixed(2)})`);
+          gG.addColorStop(1, 'rgba(100,180,255,0)');
+          splashCtx.strokeStyle = gG;
+          splashCtx.lineWidth = l.width * 4;
+          splashCtx.beginPath(); splashCtx.moveTo(startX, startY); splashCtx.lineTo(endX, endY); splashCtx.stroke();
+          splashCtx.restore();
+
+          // Trait net
+          splashCtx.save();
+          splashCtx.filter = 'blur(0.5px)';
+          const gC = splashCtx.createLinearGradient(startX, startY, endX, endY);
+          gC.addColorStop(0, `rgba(180,220,255,${flicker.toFixed(2)})`);
+          gC.addColorStop(0.6, `rgba(100,180,255,${(flicker * 0.4).toFixed(2)})`);
+          gC.addColorStop(1, 'rgba(100,180,255,0)');
+          splashCtx.strokeStyle = gC;
+          splashCtx.lineWidth = l.width;
+          splashCtx.beginPath(); splashCtx.moveTo(startX, startY); splashCtx.lineTo(endX, endY); splashCtx.stroke();
+          splashCtx.restore();
+        });
+
+        // ── Halo central sur le logo ──
+        splashCtx.save();
+        splashCtx.filter = 'blur(18px)';
+        const pulse = (0.12 + 0.05 * Math.sin(splashPhase * 1.8)) * (1 + splashHover * 0.8);
+        const gH = splashCtx.createRadialGradient(cx, cy, 0, cx, cy, logoR * 1.8);
+        gH.addColorStop(0, `rgba(100,180,255,${pulse.toFixed(3)})`);
+        gH.addColorStop(1, 'rgba(100,180,255,0)');
+        splashCtx.fillStyle = gH;
+        splashCtx.beginPath(); splashCtx.arc(cx, cy, logoR * 1.8, 0, Math.PI * 2); splashCtx.fill();
+        splashCtx.restore();
+
+        // ── Effet glitch/glow sur MY LINKS ──
+        const titleEl = document.getElementById('splash-title');
+        if (titleEl) {
+          const tr = titleEl.getBoundingClientRect();
+          const tx = tr.left + tr.width / 2;
+          const ty = tr.top  + tr.height / 2;
+          const tw2 = tr.width / 2;
+          const th2 = tr.height / 2;
+
+          // Halo derrière le texte
+          splashCtx.save();
+          splashCtx.filter = 'blur(22px)';
+          const gT = splashCtx.createRadialGradient(tx, ty, 0, tx, ty, tw2 * 1.3);
+          const tPulse = 0.18 + 0.08 * Math.sin(splashPhase * 2.1 + 1.5);
+          gT.addColorStop(0, `rgba(100,180,255,${tPulse.toFixed(3)})`);
+          gT.addColorStop(1, 'rgba(100,180,255,0)');
+          splashCtx.fillStyle = gT;
+          splashCtx.beginPath();
+          splashCtx.ellipse(tx, ty, tw2 * 1.3, th2 * 2.5, 0, 0, Math.PI * 2);
+          splashCtx.fill();
+          splashCtx.restore();
+
+          // Ligne brillante sous le texte
+          splashCtx.save();
+          splashCtx.filter = 'blur(1px)';
+          const lineA = (0.35 + 0.2 * Math.sin(splashPhase * 1.4)) ;
+          const gL = splashCtx.createLinearGradient(tx - tw2, ty + th2 + 3, tx + tw2, ty + th2 + 3);
+          gL.addColorStop(0,   'rgba(100,180,255,0)');
+          gL.addColorStop(0.3, `rgba(140,210,255,${lineA.toFixed(2)})`);
+          gL.addColorStop(0.7, `rgba(140,210,255,${lineA.toFixed(2)})`);
+          gL.addColorStop(1,   'rgba(100,180,255,0)');
+          splashCtx.strokeStyle = gL;
+          splashCtx.lineWidth = 1.2;
+          splashCtx.beginPath();
+          splashCtx.moveTo(tx - tw2, ty + th2 + 3);
+          splashCtx.lineTo(tx + tw2, ty + th2 + 3);
+          splashCtx.stroke();
+          splashCtx.restore();
+
+          // Petites particules qui glissent sur la ligne
+          for (let p = 0; p < 3; p++) {
+            const pt = ((splashPhase * 0.4 + p * 0.33) % 1);
+            const px2 = (tx - tw2) + pt * tw2 * 2;
+            const py2 = ty + th2 + 3;
+            const pa = Math.sin(pt * Math.PI) * 0.8;
+            splashCtx.save();
+            splashCtx.filter = 'blur(0.5px)';
+            splashCtx.fillStyle = `rgba(200,230,255,${pa.toFixed(2)})`;
+            splashCtx.beginPath(); splashCtx.arc(px2, py2, 1.5, 0, Math.PI * 2); splashCtx.fill();
+            splashCtx.restore();
+          }
+
+          // Coins HUD sur le texte
+          const hudA = (0.3 + 0.2 * Math.sin(splashPhase * 1.1)).toFixed(2);
+          const pad = 8;
+          [[tr.left-pad, tr.top-pad, 1,1], [tr.right+pad, tr.top-pad, -1,1],
+           [tr.left-pad, tr.bottom+pad, 1,-1], [tr.right+pad, tr.bottom+pad, -1,-1]].forEach(([hx,hy,sx,sy]) => {
+            splashCtx.save();
+            splashCtx.strokeStyle = `rgba(100,180,255,${hudA})`;
+            splashCtx.lineWidth = 1;
+            splashCtx.beginPath();
+            splashCtx.moveTo(hx, hy + sy*8); splashCtx.lineTo(hx, hy); splashCtx.lineTo(hx + sx*8, hy);
+            splashCtx.stroke();
+            splashCtx.restore();
+          });
+        }
+
+        // ── Glitch horizontal sur MY LINKS ──
+        const tEl2 = document.getElementById('splash-title');
+        if (tEl2 && Math.random() < 0.04) {
+          const tr2 = tEl2.getBoundingClientRect();
+          const slices = 2 + Math.floor(Math.random() * 3);
+          for (let s = 0; s < slices; s++) {
+            const sy2 = tr2.top + Math.random() * tr2.height;
+            const sh2 = 2 + Math.random() * 8;
+            const ox = (Math.random() - 0.5) * 18;
+            const alpha = 0.35 + Math.random() * 0.4;
+            splashCtx.save();
+            splashCtx.globalAlpha = alpha;
+            // Copie décalée bleu
+            splashCtx.drawImage(splashC,
+              tr2.left, sy2, tr2.width, sh2,
+              tr2.left + ox, sy2, tr2.width, sh2);
+            // Trait de glitch
+            splashCtx.fillStyle = `rgba(100,200,255,${alpha * 0.6})`;
+            splashCtx.fillRect(tr2.left, sy2, tr2.width, 1);
+            splashCtx.restore();
+          }
+        }
+
+        // ── Pulse canvas (onde depuis logo au clic) ──
+        pulseCtx.clearRect(0, 0, pulseC.width, pulseC.height);
+        if (window._splashPulseActive && window._splashPulseOrigin) {
+          const elapsed = performance.now() - window._splashPulseStart;
+          const duration = 600;
+          const progress = elapsed / duration;
+          if (progress >= 1) {
+            window._splashPulseActive = false;
+          } else {
+            const maxR = Math.max(pulseC.width, pulseC.height) * 1.2;
+            const r = progress * maxR;
+            const alpha = (1 - progress) * 0.6;
+            const { x, y } = window._splashPulseOrigin;
+            // Onde principale
+            pulseCtx.save();
+            pulseCtx.beginPath();
+            pulseCtx.arc(x, y, r, 0, Math.PI * 2);
+            pulseCtx.strokeStyle = `rgba(100,180,255,${alpha})`;
+            pulseCtx.lineWidth = 3 * (1 - progress);
+            pulseCtx.stroke();
+            // Onde secondaire légère
+            pulseCtx.beginPath();
+            pulseCtx.arc(x, y, r * 0.65, 0, Math.PI * 2);
+            pulseCtx.strokeStyle = `rgba(200,230,255,${alpha * 0.4})`;
+            pulseCtx.lineWidth = 1;
+            pulseCtx.stroke();
+            pulseCtx.restore();
+          }
+        }
+
+        requestAnimationFrame(drawSplashStars);
+      }
+      drawSplashStars();
+      // Typewriter — sans "Welcome back"
+      const twLines = ['IDENTIFYING PILOT...', 'CITIZEN ID: ████████', 'AUTH LEVEL: AUTHORIZED'];
+      let twL = 0, twC = 0;
+      const twEl = document.getElementById('splash-tw');
+
+      // AudioContext global splash — null jusqu'au premier geste
+      let spAudio = null;
+
+      function spPlayKey() {
+        if (!spAudio) return;
+        if (spAudio.state === 'suspended') spAudio.resume();
+        try {
+          const t = spAudio.currentTime;
+          const o = spAudio.createOscillator(), g = spAudio.createGain();
+          o.connect(g); g.connect(spAudio.destination);
+          o.type = 'sine';
+          o.frequency.setValueAtTime(1200 + Math.random() * 400, t);
+          o.frequency.exponentialRampToValueAtTime(900, t + 0.04);
+          g.gain.setValueAtTime(0.025, t);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+          o.start(t); o.stop(t + 0.06);
+        } catch(e) {}
+      }
+
+      function spPlayLock() {
+        if (!spAudio) return;
+        if (spAudio.state === 'suspended') spAudio.resume();
+        try {
+          const t = spAudio.currentTime;
+          [[380,520,0,0.12],[600,900,0.1,0.18],[900,1400,0.22,0.1]].forEach(([f1,f2,delay,vol]) => {
+            const o = spAudio.createOscillator(), g = spAudio.createGain();
+            o.connect(g); g.connect(spAudio.destination);
+            o.type = 'sine';
+            o.frequency.setValueAtTime(f1, t+delay);
+            o.frequency.exponentialRampToValueAtTime(f2, t+delay+0.08);
+            g.gain.setValueAtTime(vol, t+delay);
+            g.gain.exponentialRampToValueAtTime(0.0001, t+delay+0.2);
+            o.start(t+delay); o.stop(t+delay+0.2);
+          });
+        } catch(e) {}
+      }
+
+      function twType() {
+        if (twL >= twLines.length) { twEl.textContent = twLines[twLines.length-1]; return; }
+        if (twC < twLines[twL].length) {
+          twEl.textContent = twLines[twL].slice(0, ++twC) + '▌';
+          if (twLines[twL][twC-1] !== '\u2588') spPlayKey();
+          setTimeout(twType, 55);
+        } else {
+          twEl.textContent = twLines[twL];
+          const wasLast = twL === twLines.length - 1;
+          twL++; twC = 0;
+          if (wasLast) setTimeout(spPlayLock, 80);
+          else if (twL < twLines.length) setTimeout(twType, 380);
+        }
+      }
+
+      // Créer AudioContext au premier mousemove (pas bloqué par Chrome pour ça)
+      // puis resume() au clic pour garantir qu'il tourne
+      document.getElementById('splash').addEventListener('mousemove', function() {
+        if (!spAudio) {
+          try { spAudio = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+        }
+      }, { once: true, passive: true });
+
+      // Typewriter démarre à 1.8s
+      setTimeout(twType, 1800);
+
+      // Clic splash : jouer son + lancer experience
+      document.getElementById('splash').addEventListener('click', function onSplashClick() {
+        try {
+          const snd = new Audio('so_rot_2.mp3');
+          snd.volume = 0.6; snd.play().catch(()=>{});
+        } catch(e) {}
+        startExperience();
+      }, { once: true });
+    </script>
+  </div>
+
+  <div class="scene-bg"></div>
+
+  <button id="mute-btn" onclick="toggleMute()">
+    <span class="mute-label" id="mute-label">MUSIQUE</span>
+    <span class="slider-track"><span class="slider-knob"></span></span>
+  </button>
+  <button id="fx-btn" onclick="toggleFx()">
+    <span class="fx-label">FX</span>
+    <span class="slider-track"><span class="slider-knob"></span></span>
+  </button>
+
+  <!-- Logo TB — sur le bezel, hors écran, centré en haut -->
+  <div id="tb-logo" style="opacity:0">
+    <div class="logo-wrap">
+      <!-- État 1 : sans contour vert -->
+      <img class="logo-base logo-state-1" src="https://i.ibb.co/23jMLRDc/e6f8c618-4732-4456-9d3b-f545145efa4b.png" alt="Torpedo Burrito" />
+      <!-- État 2 : avec contour vert néon — superposé, opacité alternée -->
+      <img class="logo-base logo-state-2" src="https://i.ibb.co/h18f1r2F/c229e30d-a02c-45e0-8122-57390d0a1eba.png" alt="Torpedo Burrito Neon" style="position:absolute;inset:0;width:100%;opacity:0;" />
+      <div class="logo-holo"></div>
+      <div class="logo-scan"></div>
+    </div>
+  </div>
+
+  <!-- Canvas projection holographique — dans terminal-wrap -->
+  <canvas id="holo-canvas"></canvas>
+
+  <div class="terminal-wrap" id="wrap">
+
+    <div class="screen-black"></div>
+
+    <div class="screen" id="screen">
+
+      <!-- Boot -->
+      <div class="boot-overlay">
+        <div class="boot-logo">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="boot-text">Initialisation système</div>
+        <div class="boot-bar-wrap"><div class="boot-bar"></div></div>
+        <div class="boot-sub">MY <span style="color:#7eb8d4;">LINKS</span> · Navigation Hub</div>
+      </div>
+
+      <!-- Contenu scrollable -->
+      <div class="site-inner" id="site-inner">
+
+        <canvas id="stars"></canvas>
+        <div class="scanlines"></div>
+
+        <!-- HEADER STICKY -->
+        <div class="header">
+          <div class="header-top-bar">
+            <div class="bar"></div>
+            <div class="header-emblem" id="holo-source">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+            </div>
+            <div class="bar right"></div>
+          </div>
+          <h1><span class="glitch-wrap" data-text="MY LINKS">MY <span style="color:#7eb8d4;text-shadow:0 0 20px rgba(126,184,212,0.5)">LINKS</span></span></h1>
+          <div class="header-sub">Navigation Hub</div>
+          <div class="header-bottom-bar">
+            <div class="hb-line"></div><div class="hb-dot"></div><div class="hb-line"></div>
+          </div>
+        </div>
+
+        <!-- CONTENU -->
+        <div class="content-area">
+          <div class="wrapper">
+
+            <!-- COLONNE GAUCHE -->
+            <div class="col">
+              <div class="category"><span class="category-label">Combat &amp; Équipement</span></div>
+              <a class="link-card" href="https://seeknd.github.io/Wikelo/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                <div class="link-info"><div class="link-name">Wikelo</div><div class="link-desc">seeknd.github.io · Banu Trade Référence</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://www.spviewer.eu/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <div class="link-info"><div class="link-name">SP Viewer</div><div class="link-desc">spviewer.eu · Ships Performance Viewer</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://www.erkul.games/live/calculator" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="16" y2="12"/><line x1="8" y1="17" x2="10" y2="17"/><line x1="14" y1="17" x2="16" y2="17"/></svg></div>
+                <div class="link-info"><div class="link-name">Erkul DPS Calculator</div><div class="link-desc">erkul.games · Optimisation d'équipement</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+
+              <div class="category"><span class="category-label">Commerce &amp; Trading</span></div>
+              <a class="link-card" href="https://sc-trade.tools/home" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="link-info"><div class="link-name">SC Trade Tools</div><div class="link-desc">sc-trade.tools · Outils de commerce</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://gallog.co/trading" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                <div class="link-info"><div class="link-name">Gallog Trading</div><div class="link-desc">gallog.co · Journal de trading</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://uexcorp.space/items" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                <div class="link-info"><div class="link-name">UEX Corp Items</div><div class="link-desc">uexcorp.space · Base de données d'items</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://scmdb.net/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg></div>
+                <div class="link-info"><div class="link-name">SCMDB</div><div class="link-desc">scmdb.net · Base de données SC</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+
+              <div class="category"><span class="category-label">Personnages</span></div>
+              <a class="link-card" href="https://www.star-citizen-characters.com/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div class="link-info"><div class="link-name">SC Characters</div><div class="link-desc">star-citizen-characters.com · Personnages</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+
+              <div class="category"><span class="category-label">Actualités &amp; Infos</span></div>
+              <a class="link-card" href="https://www.wormholetribune.com/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><line x1="18" y1="2" x2="18" y2="22"/><line x1="14" y1="7" x2="8" y2="7"/><line x1="14" y1="12" x2="8" y2="12"/></svg></div>
+                <div class="link-info"><div class="link-name">Wormhole Tribune</div><div class="link-desc">wormholetribune.com · Actualités Star Citizen</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+
+            <!-- COLONNE DROITE -->
+            <div class="col">
+              <div class="category"><span class="category-label">Navigation &amp; Guides</span></div>
+              <a class="link-card" href="https://verseguide.com/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg></div>
+                <div class="link-info"><div class="link-name">Verse Guide</div><div class="link-desc">verseguide.com · Guide &amp; ressources</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://regolith.rocks/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8l4 4-4 4-4-4 4-4z"/></svg></div>
+                <div class="link-info"><div class="link-name">Regolith Rocks</div><div class="link-desc">regolith.rocks · Minage &amp; ressources</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://finder.cstone.space/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                <div class="link-info"><div class="link-name">Cornerstone Finder</div><div class="link-desc">finder.cstone.space · Localisation</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://snareplan.dolus.eu/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+                <div class="link-info"><div class="link-name">Snareplan</div><div class="link-desc">snareplan.dolus.eu · Planification tactique</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://starcitizen.tools/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+                <div class="link-info"><div class="link-name">Star Citizen Tools</div><div class="link-desc">starcitizen.tools · Wiki &amp; référence</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://crafter.infinityfreeapp.com/?i=1" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <div class="link-info"><div class="link-name">SC Crafter</div><div class="link-desc">infinityfreeapp.com · Crafting SC</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+
+              <div class="category"><span class="category-label">Flottes &amp; Vaisseaux</span></div>
+              <a class="link-card" href="https://support.robertsspaceindustries.com/hc/en-us/articles/360003093114-Loaner-Ship-Matrix" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                <div class="link-info"><div class="link-name">Loaner Ship Matrix</div><div class="link-desc">robertsspaceindustries.com · Vaisseaux prêtés</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://hangar.link/" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+                <div class="link-info"><div class="link-name">Hangar Link</div><div class="link-desc">hangar.link · Partage de hangar</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+              <a class="link-card" href="https://ccugame.app/sign-in?redirectURL=%2Fyour-items%2Ffleet" target="_blank" rel="noopener">
+                <div class="link-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="link-info"><div class="link-name">CCU Game — Fleet</div><div class="link-desc">ccugame.app · Gestion de flotte</div></div>
+                <svg class="link-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stars -->
+        <script>
+          const canvas = document.getElementById('stars');
+          const c = canvas.getContext('2d');
+          let W, H, stars = [];
+          function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+          function initStars(n=180) {
+            stars = Array.from({length:n}, () => ({
+              x:Math.random()*W, y:Math.random()*H,
+              r:Math.random()*1.2+0.1,
+              alpha:Math.random()*0.7+0.1,
+              da:(Math.random()*0.004+0.001)*(Math.random()<0.5?1:-1),
+              blue:Math.random()<0.1
+            }));
+          }
+          function drawStars() {
+            c.clearRect(0,0,W,H);
+            stars.forEach(s => {
+              s.alpha += s.da;
+              if(s.alpha<=0.05||s.alpha>=0.85) s.da*=-1;
+              c.beginPath(); c.arc(s.x,s.y,s.r,0,Math.PI*2);
+              c.fillStyle = s.blue?`rgba(126,184,212,${s.alpha*0.5})`:`rgba(220,235,255,${s.alpha*0.6})`;
+              c.fill();
+            });
+            requestAnimationFrame(drawStars);
+          }
+          window.addEventListener('resize',()=>{resize();initStars()});
+          resize(); initStars(); drawStars();
+        </script>
+
+        <!-- HUD Corners -->
+        <script>
+          document.querySelectorAll('.link-card').forEach(card => {
+            ['tl','tr','bl','br'].forEach(pos => {
+              const d = document.createElement('div');
+              d.className = `hud-corner ${pos}`;
+              card.appendChild(d);
+            });
+          });
+        </script>
+
+        <!-- Audio -->
+        <script>
+          // ── Audio HTML5 simple — pas de Web Audio API ──
+          const bgMusic = new Audio('so_menu_upgrade.mp3');
+          bgMusic.loop = true; bgMusic.volume = 0.18;
+
+          // Sons FX — courtes clips réutilisables
+          function makePool(src, size) {
+            return Array.from({length: size}, () => {
+              const a = new Audio(src); a.volume = 0.5; return a;
+            });
+          }
+          const hoverPool = makePool('so_rot_1.mp3', 3);
+          const clickPool = makePool('so_rot_2.mp3', 3);
+          let hoverIdx = 0, clickIdx = 0;
+
+          function playHover() {
+            if (fxMuted) return;
+            const a = hoverPool[hoverIdx++ % hoverPool.length];
+            a.currentTime = 0; a.play().catch(()=>{});
+          }
+          function playClick() {
+            if (fxMuted) return;
+            const a = clickPool[clickIdx++ % clickPool.length];
+            a.currentTime = 0; a.play().catch(()=>{});
+          }
+
+          function startExperience() {
+            const splash = document.getElementById('splash');
+            if (splash._leaving) return;
+            splash._leaving = true;
+            unlockAudio();
+            // Flash
+            const fl = document.getElementById('splash-flash');
+            if (fl) { fl.classList.add('go'); }
+            // Onde pulse depuis le logo
+            const logoEl2 = document.getElementById('splash-logo');
+            if (logoEl2) {
+              const r2 = logoEl2.getBoundingClientRect();
+              window._splashPulseOrigin = { x: r2.left + r2.width/2, y: r2.top + r2.height/2 };
+              window._splashPulseActive = true;
+              window._splashPulseStart = performance.now();
+            }
+            setTimeout(() => {
+              splash.style.transition = 'opacity 0.7s ease';
+              splash.classList.add('hide');
+              setTimeout(() => splash.remove(), 750);
+            }, 200);
+          }
+          let audioUnlocked = false;
+          function unlockAudio() {
+            if (audioUnlocked) return;
+            audioUnlocked = true;
+            if (!window.ctx) window.ctx = new (window.AudioContext||window.webkitAudioContext)();
+            bgMusic.play().catch(()=>{});
+          }
+          ['mousedown','keydown','touchstart'].forEach(e =>
+            document.addEventListener(e, unlockAudio, {once:true,passive:true})
+          );
+
+          let muted=false;
+          function toggleMute() { muted=!muted; bgMusic.muted=muted; document.getElementById('mute-btn').classList.toggle('muted',muted); }
+          let fxMuted=false;
+          function toggleFx() { fxMuted=!fxMuted; document.getElementById('fx-btn').classList.toggle('muted',fxMuted); }
+
+          // Sons logo TB
+          const logoSounds = [
+            new Audio('so_rot_1.mp3'),
+            new Audio('so_rot_2.mp3'),
+          ];
+          logoSounds.forEach(s => { s.volume = 0.6; });
+
+          document.getElementById('tb-logo').addEventListener('click', () => {
+            if (fxMuted) return;
+            const snd = logoSounds[Math.floor(Math.random() * logoSounds.length)];
+            snd.currentTime = 0;
+            snd.play().catch(()=>{});
+          });
+
+          // ── Alternance des deux états du logo ──
+          const logoS1 = document.querySelector('.logo-state-1');
+          const logoS2 = document.querySelector('.logo-state-2');
+          let logoNeonActive = false;
+
+          function schedulLogoSwitch() {
+            // Durée irrégulière : état normal plus long, état néon plus court (flash)
+            const delay = logoNeonActive
+              ? 200  + Math.random() * 400   // néon visible : 200–600ms
+              : 2500 + Math.random() * 4000; // normal : 2.5–6.5s
+            setTimeout(() => {
+              logoNeonActive = !logoNeonActive;
+              if (logoNeonActive) {
+                // Transition rapide vers néon
+                logoS2.style.transition = 'opacity 0.05s ease';
+                logoS2.style.opacity = '1';
+                logoS1.style.opacity = '0';
+              } else {
+                // Retour progressif vers normal
+                logoS2.style.transition = 'opacity 0.15s ease';
+                logoS2.style.opacity = '0';
+                logoS1.style.opacity = '1';
+              }
+              schedulLogoSwitch();
+            }, delay);
+          }
+          // Démarrer après révélation du logo
+          setTimeout(schedulLogoSwitch, 3600);
+
+
+          document.querySelectorAll('.link-card').forEach(card => {
+            card.addEventListener('mouseenter', playHover);
+            card.addEventListener('click', ()=>{ playClick(); });
+          });
+        </script>
+
+      </div><!-- /site-inner -->
+
+      <!-- FOOTER FIXE — hors site-inner, ne scroll pas -->
+      <div id="footer-bar">
+        <div class="fb-line"></div>
+        <div class="fb-dot"></div>
+        <div class="fb-text">© 2026 · Slowed</div>
+        <div class="fb-dot"></div>
+        <div class="fb-line right"></div>
+      </div>
+
+    </div><!-- /screen -->
+
+    <img class="terminal-bg" id="terminal-img"
+      src="https://i.ibb.co/yF5szFNj/Design-sans-titre.png" alt="SC Terminal" />
+
+    <div class="screen-fx"></div>
+
+  </div><!-- /terminal-wrap -->
+
+  <script>
+    // ══ PLACEMENT ÉCRAN ══
+    const IMG_W=2000, IMG_H=1125;
+    const SCR_X1=435, SCR_Y1=293, SCR_X2=1501, SCR_Y2=892;
+
+    function placeScreen() {
+      const wrap = document.getElementById('wrap');
+      const vw = wrap.offsetWidth||window.innerWidth;
+      const vh = wrap.offsetHeight||window.innerHeight;
+      const imgRatio=IMG_W/IMG_H, winRatio=vw/vh;
+      let renderedW,renderedH,offX,offY;
+      if(winRatio>imgRatio) {
+        renderedW=vw; renderedH=vw/imgRatio; offX=0; offY=(vh-renderedH)/2;
+      } else {
+        renderedH=vh; renderedW=vh*imgRatio; offX=(vw-renderedW)/2; offY=0;
+      }
+      const scaleX=renderedW/IMG_W, scaleY=renderedH/IMG_H;
+      const sx=offX+SCR_X1*scaleX, sy=offY+SCR_Y1*scaleY;
+      const sw=(SCR_X2-SCR_X1)*scaleX, sh=(SCR_Y2-SCR_Y1)*scaleY;
+      const r=document.documentElement;
+      r.style.setProperty('--sx', sx.toFixed(1)+'px');
+      r.style.setProperty('--sy', sy.toFixed(1)+'px');
+      r.style.setProperty('--sw', sw.toFixed(1)+'px');
+      r.style.setProperty('--sh', sh.toFixed(1)+'px');
+
+      scaleInner(sw, sh);
+
+      // Switches
+      const btn=document.getElementById('mute-btn');
+      if(btn){ btn.style.top=(sy+7)+'px'; btn.style.right=(vw-sx-sw+9)+'px'; }
+      const fxBtn=document.getElementById('fx-btn');
+      if(fxBtn){ fxBtn.style.top=(sy+35)+'px'; fxBtn.style.right=(vw-sx-sw+9)+'px'; }
+
+      // Logo TB centré au-dessus de l'écran
+      placeLogo(sx, sy, sw, vw);
+    }
+
+    function scaleInner(sw, sh) {
+      const inner=document.getElementById('site-inner');
+      if(!sw){ const scr=document.getElementById('screen'); sw=scr.offsetWidth; sh=scr.offsetHeight; }
+      inner.style.width    = sw+'px';
+      inner.style.height   = (sh-28)+'px';
+      inner.style.top      = '0';
+      inner.style.bottom   = '28px';
+      inner.style.transform= 'none';
+      inner.style.fontSize = (sw/1080*16).toFixed(2)+'px';
+    }
+
+    function placeLogo(sx, sy, sw, vw) {
+      const tbLogo=document.getElementById('tb-logo');
+      if(!tbLogo) return;
+      // Taille adaptative : 28% de la largeur de l'écran, min 120px max 340px
+      const logoW = Math.min(340, Math.max(120, sw * 0.28));
+      tbLogo.style.width = logoW + 'px';
+      // Lire offsetHeight APRÈS avoir appliqué la width (force reflow)
+      tbLogo.getBoundingClientRect(); // flush layout
+      const logoH = tbLogo.offsetHeight || logoW * 0.6;
+      // Centré horizontalement sur l'écran, juste au-dessus du bord
+      tbLogo.style.left = (sx + sw / 2 - logoW / 2) + 'px';
+      tbLogo.style.top  = (sy - logoH - 6) + 'px';
+    }
+
+    // Boot : révéler le logo après l'animation
+    setTimeout(()=>{
+      const tbLogo=document.getElementById('tb-logo');
+      if(tbLogo){ tbLogo.style.opacity='1'; }
+      resizeHoloCanvas();
+      renderHolo();
+    }, 3400);
+
+    const _ro=new ResizeObserver(()=>placeScreen());
+    _ro.observe(document.getElementById('wrap'));
+    const termImg=document.getElementById('terminal-img');
+    termImg.addEventListener('load', placeScreen);
+    if(termImg.complete) placeScreen();
+    window.addEventListener('resize', () => {
+      placeScreen();
+      // Double appel après reflow pour que offsetHeight soit correct
+      requestAnimationFrame(placeScreen);
+    });
+    [100,300,600,1200,2500].forEach(d=>setTimeout(placeScreen,d));
+
+    // ══ PROJECTION HOLOGRAPHIQUE CANVAS ══
+    const holoCanvas = document.getElementById('holo-canvas');
+    const holoCtx    = holoCanvas.getContext('2d');
+    let holoPhase    = 0;
+    let glitchActive = false, glitchTimer = 0, glitchOffX = 0, glitchOffY = 0;
+
+    function resizeHoloCanvas() {
+      const wrap=document.getElementById('wrap');
+      if(!wrap) return;
+      const r=wrap.getBoundingClientRect();
+      holoCanvas.width  = Math.round(r.width);
+      holoCanvas.height = Math.round(r.height);
+      holoCanvas.style.position='absolute';
+      holoCanvas.style.top='0'; holoCanvas.style.left='0';
+      holoCanvas.style.pointerEvents='none';
+      holoCanvas.style.zIndex='150';
+      holoCanvas.style.display='block';
+      // Attacher au wrap si pas déjà fait
+      if(holoCanvas.parentElement!==wrap) wrap.appendChild(holoCanvas);
+    }
+
+    function renderHolo() {
+      requestAnimationFrame(renderHolo);
+      const src  = document.getElementById('holo-source');
+      const logo = document.querySelector('#tb-logo .logo-base'); // image réelle avec transform
+      if(!src||!logo||!holoCtx) return;
+      const wrap = document.getElementById('wrap');
+      const cr   = wrap.getBoundingClientRect();
+      const sr   = src.getBoundingClientRect();
+      const W=holoCanvas.width, H=holoCanvas.height;
+      const ctx=holoCtx;
+      ctx.clearRect(0,0,W,H);
+
+
+      holoPhase+=0.018;
+
+      // ── Glitch timer ──
+      glitchTimer--;
+      if(glitchTimer<=0){
+        glitchActive=Math.random()<0.045;
+        if(glitchActive){ glitchOffX=(Math.random()-0.5)*16; glitchOffY=(Math.random()-0.5)*5; }
+        glitchTimer=Math.floor(Math.random()*90)+15;
+      }
+      const gox=glitchActive?glitchOffX:0, goy=glitchActive?glitchOffY:0;
+
+      const ox =sr.left+sr.width/2 -cr.left;
+      const oy =sr.top +sr.height/2-cr.top;
+
+      // Lire les 4 coins réels de l'image après transform 3D via DOMMatrix
+      function getTransformedCorners(el) {
+        const r = el.getBoundingClientRect();
+        // Tenter de récupérer la matrice 3D CSS réelle
+        let m = null;
+        try {
+          const style = window.getComputedStyle(el);
+          const raw = style.transform || style.webkitTransform;
+          if (raw && raw !== 'none') m = new DOMMatrix(raw);
+        } catch(e) {}
+
+        // Coins locaux de l'élément (avant transform)
+        const cw = r.width, ch = r.height;
+        const corners = [
+          {x: 0,  y: 0 },
+          {x: cw, y: 0 },
+          {x: cw, y: ch},
+          {x: 0,  y: ch},
+        ];
+
+        if (m) {
+          // Appliquer la matrice à chaque coin local
+          const cx = r.left + cw/2 - cr.left;
+          const cy = r.top  + ch/2 - cr.top;
+          return corners.map(p => {
+            const lx = p.x - cw/2, ly = p.y - ch/2;
+            const pt = m.transformPoint({x: lx, y: ly, z: 0});
+            return { x: cx + pt.x, y: cy + pt.y };
+          });
+        }
+        // Fallback : rectangle simple
+        return [
+          {x: r.left-cr.left,       y: r.top-cr.top},
+          {x: r.right-cr.left,      y: r.top-cr.top},
+          {x: r.right-cr.left,      y: r.bottom-cr.top},
+          {x: r.left-cr.left,       y: r.bottom-cr.top},
+        ];
+      }
+
+      const corners = getTransformedCorners(logo);
+      // TL, TR, BR, BL
+      const lx1=corners[0].x+gox, ly1=corners[0].y+goy; // TL
+      const lx2=corners[1].x+gox, ly2=corners[1].y+goy; // TR
+      const lx3=corners[2].x+gox, ly3=corners[2].y+goy; // BR
+      const lx4=corners[3].x+gox, ly4=corners[3].y+goy; // BL
+      const lxC=(lx1+lx2+lx3+lx4)/4, lyC=(ly1+ly2+ly3+ly4)/4;
+      // Bounding box pour les effets de zone
+      const bx1=Math.min(lx1,lx2,lx3,lx4);
+      const by1=Math.min(ly1,ly2,ly3,ly4);
+      const bx2=Math.max(lx1,lx2,lx3,lx4);
+      const by2=Math.max(ly1,ly2,ly3,ly4);
+      const lw=bx2-bx1, lh=by2-by1;
+
+      // Scintillement
+      const flicker=Math.max(0.3,
+        0.75+0.2*Math.sin(holoPhase*2.3)
+            +0.05*Math.sin(holoPhase*17)
+            +0.04*(Math.random()-0.5)
+            +(Math.random()<0.01?(Math.random()<0.5?-0.4:0.3):0)
+      );
+
+      // 1. Faisceau glow large
+      ctx.save(); ctx.filter='blur(14px)';
+      const g1=ctx.createLinearGradient(ox,oy,lxC,lyC);
+      g1.addColorStop(0,  `rgba(100,180,255,${(.55*flicker).toFixed(2)})`);
+      g1.addColorStop(.5, `rgba(100,180,255,${(.18*flicker).toFixed(2)})`);
+      g1.addColorStop(1,  'rgba(100,180,255,0)');
+      ctx.fillStyle=g1;
+      ctx.beginPath(); ctx.moveTo(ox,oy);
+      ctx.lineTo(lx1-8,ly1-8); ctx.lineTo(lx2+8,ly2-8);
+      ctx.lineTo(lx3+8,ly3+8); ctx.lineTo(lx4-8,ly4+8);
+      ctx.closePath(); ctx.fill(); ctx.restore();
+
+      // 2. Faisceau core
+      ctx.save(); ctx.filter='blur(2px)';
+      const g2=ctx.createLinearGradient(ox,oy,lxC,lyC);
+      g2.addColorStop(0,  `rgba(100,180,255,${(.3*flicker).toFixed(2)})`);
+      g2.addColorStop(.6, `rgba(100,180,255,${(.08*flicker).toFixed(2)})`);
+      g2.addColorStop(1,  'rgba(100,180,255,0.01)');
+      ctx.fillStyle=g2;
+      ctx.beginPath(); ctx.moveTo(ox,oy);
+      ctx.lineTo(lx1,ly1); ctx.lineTo(lx2,ly2);
+      ctx.lineTo(lx3,ly3); ctx.lineTo(lx4,ly4);
+      ctx.closePath(); ctx.fill(); ctx.restore();
+
+      // 3. Bords lumineux
+      ctx.save(); ctx.filter='blur(1px)';
+      [[lx1,ly1],[lx2,ly2],[lx3,ly3],[lx4,ly4]].forEach(([ex,ey],i)=>{
+        const a=(0.55+0.35*Math.sin(holoPhase+i*.5))*flicker;
+        const gE=ctx.createLinearGradient(ox,oy,ex,ey);
+        gE.addColorStop(0,`rgba(100,180,255,${a.toFixed(2)})`);
+        gE.addColorStop(.6,`rgba(100,180,255,${(a*.4).toFixed(2)})`);
+        gE.addColorStop(1,'rgba(100,180,255,0.05)');
+        ctx.strokeStyle=gE; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey); ctx.stroke();
+      });
+      ctx.restore();
+
+      // 4. Lignes de scan — 18 lignes, distorsion thermique individuelle
+      ctx.save(); ctx.filter='none';
+      const SCAN_COUNT = 18;
+      for(let i=0; i<SCAN_COUNT; i++){
+        const t = i / (SCAN_COUNT - 1); // 0..1 répartis sur le faisceau
+        // Distorsion thermique légère par ligne (offset horizontal petit bruit)
+        const noiseL = (Math.sin(holoPhase * 1.7 + i * 2.3) * 0.5 + Math.sin(holoPhase * 3.1 + i * 1.1) * 0.3) * 2.5;
+        const noiseR = (Math.sin(holoPhase * 1.9 + i * 1.7) * 0.5 + Math.sin(holoPhase * 2.7 + i * 2.9) * 0.3) * 2.5;
+        // Points sur les bords gauche (TL→BL) et droit (TR→BR)
+        const sx1 = ox + (lx1+(lx4-lx1)*t - ox)*t + noiseL;
+        const sy1 = oy + (ly1+(ly4-ly1)*t - oy)*t;
+        const sx2 = ox + (lx2+(lx3-lx2)*t - ox)*t + noiseR;
+        const sy2 = oy + (ly2+(ly3-ly2)*t - oy)*t;
+        // Lignes principales (i%3===0) plus épaisses et lumineuses
+        const isPrimary = i % 3 === 0;
+        const a = (isPrimary ? 0.45 : 0.18) + 0.20 * Math.sin(holoPhase * 0.9 + i * 0.7) * flicker;
+        const gS = ctx.createLinearGradient(sx1, sy1, sx2, sy2);
+        gS.addColorStop(0,   'rgba(100,180,255,0)');
+        gS.addColorStop(.25, `rgba(100,180,255,${(a*0.6).toFixed(3)})`);
+        gS.addColorStop(.5,  `rgba(140,210,255,${a.toFixed(3)})`);
+        gS.addColorStop(.75, `rgba(100,180,255,${(a*0.6).toFixed(3)})`);
+        gS.addColorStop(1,   'rgba(100,180,255,0)');
+        ctx.strokeStyle = gS;
+        ctx.lineWidth = isPrimary ? 1.1 : 0.4;
+        ctx.beginPath(); ctx.moveTo(sx1, sy1); ctx.lineTo(sx2, sy2); ctx.stroke();
+      }
+      ctx.restore();
+
+      // 5. Halo source
+      ctx.save(); ctx.filter='blur(3px)';
+      const sr2=16+4*Math.sin(holoPhase*1.8);
+      const gSrc=ctx.createRadialGradient(ox,oy,0,ox,oy,sr2);
+      gSrc.addColorStop(0,`rgba(200,230,255,${(.95*flicker).toFixed(2)})`);
+      gSrc.addColorStop(.4,`rgba(100,180,255,${(.7*flicker).toFixed(2)})`);
+      gSrc.addColorStop(1,'rgba(100,180,255,0)');
+      ctx.fillStyle=gSrc; ctx.beginPath(); ctx.arc(ox,oy,sr2,0,Math.PI*2); ctx.fill(); ctx.restore();
+      ctx.save(); ctx.fillStyle=`rgba(240,255,248,${(.98*flicker).toFixed(2)})`;
+      ctx.beginPath(); ctx.arc(ox,oy,2,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+      // 6. Halo destination
+      ctx.save(); ctx.filter='blur(10px)';
+      const gDst=ctx.createRadialGradient(lxC,lyC,0,lxC,lyC,Math.max(lw,lh)*.65);
+      gDst.addColorStop(0,`rgba(100,180,255,${(.22*flicker).toFixed(2)})`);
+      gDst.addColorStop(1,'rgba(100,180,255,0)');
+      ctx.fillStyle=gDst; ctx.beginPath(); ctx.ellipse(lxC,lyC,Math.max(lw,lh)*.5,Math.max(lw,lh)*.4,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+      // 7. Particules — 6 particules, vitesses différenciées, trainée 5 points
+      ctx.save();
+      [
+        {tu:.2, tv:.35, off:0,   spd:.38},
+        {tu:.5, tv:.5,  off:.4,  spd:.44},
+        {tu:.3, tv:.7,  off:.8,  spd:.31},
+        {tu:.75,tv:.4,  off:1.2, spd:.40},
+        {tu:.15,tv:.6,  off:.25, spd:.35},
+        {tu:.62,tv:.25, off:.65, spd:.48},
+      ].forEach(p => {
+        const t = ((holoPhase * p.spd + p.off) % 1 + 1) % 1;
+        const destX = lx1*(1-p.tu)*(1-p.tv) + lx2*p.tu*(1-p.tv) + lx3*p.tu*p.tv + lx4*(1-p.tu)*p.tv;
+        const destY = ly1*(1-p.tu)*(1-p.tv) + ly2*p.tu*(1-p.tv) + ly3*p.tu*p.tv + ly4*(1-p.tu)*p.tv;
+        const sz = 1.0 + t * 1.6;
+        // Trainée — 5 points en arrière dans le temps
+        for(let tr = 4; tr >= 0; tr--){
+          const tt = Math.max(0, t - tr * 0.018);
+          const tx = ox + (destX - ox) * tt;
+          const ty = oy + (destY - oy) * tt;
+          const ta = Math.sin(tt * Math.PI) * 0.85 * flicker * (1 - tr / 5) * 0.55;
+          const ts = sz * (1 - tr * 0.12);
+          ctx.filter = tr === 0 ? 'blur(0.3px)' : 'blur(0.8px)';
+          ctx.fillStyle = `rgba(100,180,255,${ta.toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(tx, ty, ts, 0, Math.PI*2); ctx.fill();
+        }
+        // Point principal — plus brillant
+        const a = Math.sin(t * Math.PI) * 0.9 * flicker;
+        ctx.filter = 'none';
+        ctx.fillStyle = `rgba(200,230,255,${a.toFixed(2)})`;
+        ctx.beginPath(); ctx.arc(ox+(destX-ox)*t, oy+(destY-oy)*t, sz*0.6, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.restore();
+
+      // 8. Anneaux
+      ctx.save(); ctx.filter='blur(.5px)';
+      for(let i=0;i<3;i++){
+        const rt=((holoPhase*.25+i*1.05)%3)/3;
+        const r=rt*50, a=(1-rt)*.55*flicker;
+        ctx.strokeStyle=`rgba(100,180,255,${a.toFixed(2)})`; ctx.lineWidth=.8;
+        ctx.beginPath(); ctx.arc(ox,oy,r,0,Math.PI*2); ctx.stroke();
+      }
+      ctx.restore();
+
+      // ── 9. Glitch — slice horizontal + offset logo ──
+      if(glitchActive){
+        ctx.save();
+        // Slice horizontale dans la zone du logo
+        const sliceY = by1 + Math.random()*lh;
+        const sliceH = 1.5 + Math.random()*7;
+        const sliceShift = (Math.random()-0.5)*22;
+        ctx.fillStyle=`rgba(100,180,255,${(0.06+Math.random()*0.10).toFixed(2)})`;
+        ctx.fillRect(bx1+sliceShift, sliceY, lw, sliceH);
+        // Ligne brillante sur le bord de la slice
+        ctx.strokeStyle=`rgba(200,230,255,${(0.35+Math.random()*0.35).toFixed(2)})`;
+        ctx.lineWidth=0.6;
+        ctx.beginPath();
+        ctx.moveTo(bx1+sliceShift, sliceY);
+        ctx.lineTo(bx2+sliceShift, sliceY);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    window.addEventListener('resize', resizeHoloCanvas);
+  </script>
+
+</body>
+</html>
