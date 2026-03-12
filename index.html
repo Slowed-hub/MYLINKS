@@ -119,6 +119,30 @@
     }
     @keyframes bootFade { to { opacity:0; pointer-events:none; visibility:hidden; } }
 
+    /* Splash screen "cliquer pour entrer" */
+    #splash {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #000;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 16px;
+      cursor: pointer;
+      transition: opacity 0.6s ease;
+    }
+    #splash.hide { opacity: 0; pointer-events: none; }
+    #splash .sp-logo {
+      width: 80px; height: 80px;
+      border: 1px solid rgba(126,184,212,0.5); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #splash .sp-logo svg { width: 38px; height: 38px; stroke: #7eb8d4; fill: none; stroke-width: 1.5; }
+    #splash .sp-title { font-size: 11px; letter-spacing: .35em; color: #7eb8d4; text-transform: uppercase; }
+    #splash .sp-hint {
+      font-size: 9px; letter-spacing: .25em; color: rgba(126,184,212,0.4);
+      text-transform: uppercase;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:.4} 50%{opacity:1} }
+
     /* Bouton mute */
     #mute-btn {
       position: fixed;
@@ -560,6 +584,15 @@
 </head>
 <body>
 
+  <!-- Splash — clic requis pour audio Chrome -->
+  <div id="splash" onclick="startExperience()">
+    <div class="sp-logo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+    </div>
+    <div class="sp-title">My Links</div>
+    <div class="sp-hint">Cliquer pour entrer</div>
+  </div>
+
   <div class="scene-bg"></div>
   <button id="mute-btn" onclick="toggleMute()">♪ ON</button>
   <!-- Image SC fixe — complètement en dehors de tout overflow:hidden -->
@@ -777,20 +810,27 @@
     bgMusic.loop   = true;
     bgMusic.volume = 0.18;
 
+    function startExperience() {
+      const splash = document.getElementById('splash');
+      splash.classList.add('hide');
+      setTimeout(() => splash.remove(), 650);
+      unlockAudio();
+    }
+
     let audioUnlocked = false;
     function unlockAudio() {
       if (audioUnlocked) return;
       audioUnlocked = true;
-      // Résumer l'AudioContext Web Audio (pour les sons hover/click)
       ctx.resume();
-      // Lancer la musique immédiatement au premier geste
       bgMusic.play().catch(() => {});
     }
 
-    // Déclencher sur tout geste utilisateur
-    ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach(evt =>
+    // Chrome exige un vrai clic/touche pour lancer l'audio
+    ['mousedown', 'keydown', 'touchstart'].forEach(evt =>
       document.addEventListener(evt, unlockAudio, { once: true, passive: true })
     );
+    // Sons hover/click : ctx.resume suffit sur mousemove
+    document.addEventListener('mousemove', () => { if (!audioUnlocked) ctx.resume(); }, { once: true, passive: true });
 
     let muted = false;
     function toggleMute() {
