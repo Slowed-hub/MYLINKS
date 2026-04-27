@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "1777311789850",
+    "ts": "1777311789850",
+    "title": "Déploiement Traduction",
+    "body": "Bonjour mes loulous, Raz0r speaking.\n\nJe vous mets en ligne un projet qui me tient à cœur ;  je compte sur vous pour avoir vos retours, ainsi que vos propal d'amélioration.\nJe vous précise tout de même qu'hormis les modifications de Quality of Life je ne vais pas modifier la version Anglaise, je vous mets à disposition la version de @MrKraken et de @BeltaKoda qui ont fait un travail redoutable.\n\nPour vous présenter la version Française, vous y retrouverez :\n- QOL sur les missiles (format [EM], [CS] ou [IR]) pour que ce soit le plus clair.\n- QOL sur les modules (format MIL/2/A pour militaire de taille 2 de grade A - Ind/Industriel - sth/Furtif - Civ/Civil - Cmp/Compétition) afin que la question \"MAIS C'EST UTILE ÇA?\" en smugglers.\n- Optimisation des transitions Fr/Ang avec un respect des UI du jeu de base de sorte que le discours entre deux joueurs utilisant deux traductions différentes puissent se comprendre.\n- Ajout du Triage des minerais par rareté dans le journal.\n- Ajout d'un catalogue de BluePrints trié par donneur d'ordre dans le journal.\n- Ajout des BP disponibles par missions.\n\nLa version est ici dans sa 1.0 pour son déploiement, n'hésitez pas à me solliciter sur le sujet SC discord pour les évolutions. Quelques erreurs se sont glissées dans les 95000 lignes du fichier.\nA la demande, je peux également faire en sorte que certains Ship apparaissent en premier dans l'ASOP, mais ça se fera uniquement à la demande.\nJe vous tiendrai à jour régulièrement ces fichiers, je me servirai de ces posts pour vous noter les Patch notes. (WAOUH, on fait les choses bien ici)\n\nJe compte sur vous.",
+    "pinned": true,
+    "author": "raz0rlegend",
+    "authorId": "388074584273846292"
+  }
+]
