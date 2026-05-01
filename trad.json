@@ -1,5 +1,14 @@
 [
   {
+    "id": "1777631817545",
+    "ts": "1777631817545",
+    "title": "PTU - Patchnotes 1.0.0",
+    "body": "-Correctifs & MAJ des BP\n-Pokedex à Jour\n-Divers Correctifs sur Missions\n-Optimisation UI",
+    "pinned": false,
+    "author": "raz0rlegend",
+    "authorId": "388074584273846292"
+  },
+  {
     "id": "1777370557560",
     "ts": "1777370557560",
     "title": "Patchnote 1.0.1",
